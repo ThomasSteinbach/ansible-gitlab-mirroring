@@ -1,0 +1,4 @@
+galaxy_info:
+  author: Thomas Steinbach
+  description: Create mirrors from your gitlab instance to gitlab.com and github.com
+  license: MIT
