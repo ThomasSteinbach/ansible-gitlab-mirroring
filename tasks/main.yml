@@ -1,0 +1,5 @@
+---
+
+- name: setup gitlab repository clone
+  include_tasks: setup-clone.yml
+  loop: "{{ repositories }}"

@@ -1,0 +1,16 @@
+---
+# source_repository_path: /path/to/git/repositories
+# source_repository_base_url: https://gitlab.myserver.de
+# gitlabcom_user: maxmuster
+# githubcom_user: MaxMuster
+
+## note: default visibility is public
+## could be: private,internal,public
+## just public repos are also cloned to github
+# repositories:
+#   - name: myFirstRepo
+#     visibility: private
+#   - name: mySecondRepo
+#     visibility: internal
+#   - name: myThirdRepo
+#     visibility: public

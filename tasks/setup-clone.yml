@@ -1,0 +1,49 @@
+- debug:
+    msg: "Processing repo {{ item.name }}"
+
+- name: create repo on gitlab.com
+  become: no
+  uri:
+    url: "https://gitlab.com/api/v4/projects?private_token={{ GITLAB_TOKEN }}"
+    method: POST
+    body: "{ \"name\": \"{{ item.name }}\", \"visibility\": \"{{ item.visibility | default('public') }}\", \"description\": \"Clone of {{ source_repository_base_url }}/{{ item.name }}.git\", \"issues_enabled\": false, \"merge_requests_enabled\": false, \"jobs_enabled\": false, \"wiki_enabled\": false, \"snippets_enabled\": false, \"container_registry_enabled\": false, \"shared_runners_enabled\": false }"
+    body_format: json
+    return_content: yes
+    timeout: 120
+  register: result
+  changed_when: "result.status == 201"
+  failed_when: "result.status != 201 and 'has already been taken' not in result.content"
+
+- name: create repo on github.com
+  become: no
+  uri:
+    url: "https://api.github.com/user/repos?access_token={{ GITHUB_TOKEN }}"
+    method: POST
+    body: "{ \"name\": \"{{ item.name }}\", \"description\": \"Clone of {{ source_repository_base_url }}/{{ item.name }}.git\", \"has_issues\": false, \"has_projects\": false, \"has_wiki\": false }"
+    body_format: json
+    return_content: yes
+    timeout: 120
+  when: item.visibility is not defined or item.visibility == 'public'
+  register: result
+  changed_when: "result.status == 201"
+  failed_when: "result.status != 201 and 'name already exists on this account' not in result.content"
+
+- name: get owner and group of repository dir
+  stat:
+    path: "{{ source_repository_path }}"
+  register: sourceDir
+
+- name: create custom_hooks directory
+  file:
+    path: "{{ source_repository_path }}/{{ item.name }}.git/custom_hooks"
+    owner: "{{ sourceDir.stat.uid }}"
+    group: "{{ sourceDir.stat.gid }}"
+    state: directory
+
+- name: setup post-receive hook to push clone
+  template:
+    src: post-receive.j2
+    dest: "{{ source_repository_path }}/{{ item.name }}.git/custom_hooks/post-receive"
+    owner: "{{ sourceDir.stat.uid }}"
+    group: "{{ sourceDir.stat.gid }}"
+    mode: 0750
