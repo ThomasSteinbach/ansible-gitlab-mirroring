@@ -23,7 +23,7 @@
     body_format: json
     return_content: yes
     timeout: 120
-  when: item.visibility is not defined or item.visibility == 'public'
+  when: item.visibility == 'public'
   register: result
   changed_when: "result.status == 201"
   failed_when: "result.status != 201 and 'name already exists on this account' not in result.content"
