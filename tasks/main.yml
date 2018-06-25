@@ -1,5 +1,33 @@
 ---
+- name: query user
+  uri:
+    url: "http://localhost:80/api/v4/users?username={{ source_repository_user }};private_token={{ GITLAB_TOKEN }}"
+    method: GET
+    return_content: yes
+    timeout: 120
+  register: result
 
-- name: setup gitlab repository clone
+- name: log user query
+  debug:
+    var: result.content
+
+- name: extract user id
+  set_fact:
+    userid: "{{ (result.content | from_json)[0].id }}"
+
+- name: query users repositories
+  uri:
+    url: "http://localhost:80/api/v4/users/{{ userid }}/projects?private_token={{ GITLAB_TOKEN }}"
+    method: GET
+    return_content: yes
+    timeout: 120
+  register: result
+
+- name: extract repositories list
+  set_fact:
+    projectlist: "{{ result.content | from_json }}"
+
+- name: setup gitlab repository clones
   include_tasks: setup-clone.yml
-  loop: "{{ repositories }}"
+  with_items: "{{ projectlist }}"
+  when: item.name not in ignored_repositories
