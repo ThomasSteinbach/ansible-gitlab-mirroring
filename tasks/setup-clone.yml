@@ -1,13 +1,15 @@
 - debug:
-    msg: "Processing repo {{ item.name }}"
+    msg: "Processing repo {{ item.path_with_namespace }}"
 
 - name: create repo on gitlab.com
   become: no
   uri:
-    url: "https://gitlab.com/api/v4/projects?private_token={{ GITLAB_TOKEN }}"
+    url: "https://gitlab.com/api/v4/projects"
     method: POST
-    body: "{ \"name\": \"{{ item.path }}\", \"visibility\": \"{{ item.visibility }}\", \"description\": \"Clone of {{ item.http_url_to_repo }}\", \"issues_enabled\": false, \"merge_requests_enabled\": false, \"jobs_enabled\": false, \"wiki_enabled\": false, \"snippets_enabled\": false, \"container_registry_enabled\": false, \"shared_runners_enabled\": false }"
+    body: "{ \"name\": \"{{ (item.namespace.name + '-') when item.namespace.name != username }}{{ item.path }}\", \"visibility\": \"{{ item.visibility }}\", \"description\": \"Clone of {{ item.http_url_to_repo }}\", \"issues_enabled\": false, \"merge_requests_enabled\": false, \"jobs_enabled\": false, \"wiki_enabled\": false, \"snippets_enabled\": false, \"container_registry_enabled\": false, \"shared_runners_enabled\": false }"
     body_format: json
+    headers:
+      Private-Token: "{{ GITLAB_TOKEN }}"
     return_content: yes
     timeout: 120
   register: result
@@ -17,10 +19,12 @@
 - name: create repo on github.com
   become: no
   uri:
-    url: "https://api.github.com/user/repos?access_token={{ GITHUB_TOKEN }}"
+    url: "https://api.github.com/user/repos"
     method: POST
-    body: "{ \"name\": \"{{ item.path }}\", \"description\": \"Clone of {{ item.http_url_to_repo }}\", \"has_issues\": false, \"has_projects\": false, \"has_wiki\": false }"
+    body: "{ \"name\": \"{{ (item.namespace.name + '-') when item.namespace.name != username }}{{ item.path }}\", \"description\": \"Clone of {{ item.http_url_to_repo }}\", \"has_issues\": false, \"has_projects\": false, \"has_wiki\": false }"
     body_format: json
+    headers:
+      Authorization: "token GITHUB_TOKEN"
     return_content: yes
     timeout: 120
   when: item.visibility == 'public'
@@ -30,12 +34,12 @@
 
 - name: get owner and group of repository dir
   stat:
-    path: "{{ source_repository_path }}/{{ item.owner.name }}/{{ item.path }}"
+    path: "{{ source_repository_path }}/{{ item.path_with_namespace }}.git"
   register: sourceDir
 
 - name: create custom_hooks directory
   file:
-    path: "{{ source_repository_path }}/{{ item.owner.name }}/{{ item.path }}.git/custom_hooks"
+    path: "{{ source_repository_path }}/{{ item.path_with_namespace }}.git/custom_hooks"
     owner: "{{ sourceDir.stat.uid }}"
     group: "{{ sourceDir.stat.gid }}"
     state: directory
@@ -43,7 +47,7 @@
 - name: setup post-receive hook to push clone
   template:
     src: post-receive.j2
-    dest: "{{ source_repository_path }}/{{ item.owner.name }}/{{ item.path }}.git/custom_hooks/post-receive"
+    dest: "{{ source_repository_path }}/{{ item.path_with_namespace }}.git/custom_hooks/post-receive"
     owner: "{{ sourceDir.stat.uid }}"
     group: "{{ sourceDir.stat.gid }}"
     mode: 0750

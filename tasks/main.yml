@@ -1,33 +1,33 @@
 ---
-- name: query user
+- name: query users repositories where he is at least developer
   uri:
-    url: "http://localhost:80/api/v4/users?username={{ source_repository_user }};private_token={{ GITLAB_TOKEN }}"
-    method: GET
+    url: "https://{{ gitlab_domain }}/api/v4/projects?per_page={{ project_query_size }}&min_access_level=30"
+    method: GET                
+    headers:
+      Private-Token: "{{ SOURCE_GITLAB_TOKEN }}"
     return_content: yes
-    timeout: 120
-  register: result
-
-- name: log user query
-  debug:
-    var: result.content
-
-- name: extract user id
-  set_fact:
-    userid: "{{ (result.content | from_json)[0].id }}"
-
-- name: query users repositories
-  uri:
-    url: "http://localhost:80/api/v4/users/{{ userid }}/projects?private_token={{ GITLAB_TOKEN }}"
-    method: GET
-    return_content: yes
-    timeout: 120
+    timeout: 120               
   register: result
 
 - name: extract repositories list
   set_fact:
     projectlist: "{{ result.content | from_json }}"
 
+- name: query user information
+  uri:
+    url: "https://{{ gitlab_domain }}/api/v4/user"
+    method: GET
+    headers:
+      Private-Token: "{{ SOURCE_GITLAB_TOKEN }}"
+    return_content: yes
+    timeout: 120
+  register: result
+
+- name: extract username to differ repositories which are from groups
+  set_fact:
+    username: "{{ (result.content | from_json).username }}"
+
 - name: setup gitlab repository clones
   include_tasks: setup-clone.yml
   with_items: "{{ projectlist }}"
-  when: item.name not in ignored_repositories
+  when: item.path_with_namespace not in ignored_repositories

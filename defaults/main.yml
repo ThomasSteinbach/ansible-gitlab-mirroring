@@ -1,9 +1,12 @@
 ---
+# default max projects handled by this role
+project_query_size: 1000
+
 # source_repository_path: /path/to/git/repositories
 # source_repository_user: maxmuster
 # gitlabcom_user: maxmuster
 # githubcom_user: MaxMuster
 
 # ignored_repositories:
-#   - myFirstRepo
-#   - myThirdRepo
+#   - userx/myFirstRepo
+#   - groupy/myThirdRepo
