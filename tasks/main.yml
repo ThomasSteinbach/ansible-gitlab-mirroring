@@ -46,7 +46,7 @@
     url: "https://api.github.com/user"
     method: GET
     headers:
-      Private-Token: "{{ GITHUB_TOKEN }}"
+      Authorization: "token {{ GITHUB_TOKEN }}"
     return_content: yes
     timeout: 120
   register: result
