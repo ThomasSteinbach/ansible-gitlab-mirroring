@@ -1,7 +1,4 @@
 ---
-# the port under which is SOURCE_GITLAB_URL reachable
-sourc_gitlb_port: 80
-
 # default max projects handled by this role
 project_query_size: 1000
 

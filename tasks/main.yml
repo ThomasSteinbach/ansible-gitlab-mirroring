@@ -1,9 +1,4 @@
 ---
-
-- name: wait for source gitlab is available
-  wait_for:
-    port: "{{ source_gitlab_port }}"
-
 - name: query users repositories where he is at least developer
   uri:
     url: "{{ SOURCE_GITLAB_URL }}/api/v4/projects?per_page={{ project_query_size }}&min_access_level=30"
