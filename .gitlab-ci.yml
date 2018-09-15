@@ -1,0 +1,14 @@
+test:
+  stage: test
+  image: thomass/ansibleci
+  services:
+    - name: thomass/gitlab-testinstance
+      alias: aci-target
+  variables:
+    PLAYBOOKDIR: "${CI_PROJECT_DIR}/examples/default"
+    TARGETUSER: uid1000
+    TARGETPASSWORD: uid1000
+  script: run-tests
+            --extra-vars SOURCE_GITLAB_TOKEN="$(curl -fsSl http://aci-target/root/config/raw/master/access-token)"
+            --extra-vars GITLAB_TOKEN="$GITLABCI_SECRET_GITLAB_TOKEN"
+            --extra-vars GITHUB_TOKEN="$GITLABCI_SECRET_GITHUB_TOKEN"

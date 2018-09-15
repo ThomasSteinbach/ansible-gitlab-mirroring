@@ -1,7 +1,12 @@
 ---
+
+- name: wait for source gitlab is available
+  wait_for:
+    port: "{{ source_gitlab_port }}"
+
 - name: query users repositories where he is at least developer
   uri:
-    url: "https://{{ gitlab_domain }}/api/v4/projects?per_page={{ project_query_size }}&min_access_level=30"
+    url: "{{ SOURCE_GITLAB_URL }}/api/v4/projects?per_page={{ project_query_size }}&min_access_level=30"
     method: GET                
     headers:
       Private-Token: "{{ SOURCE_GITLAB_TOKEN }}"
@@ -15,7 +20,7 @@
 
 - name: query user information
   uri:
-    url: "https://{{ gitlab_domain }}/api/v4/user"
+    url: "{{ SOURCE_GITLAB_URL }}/api/v4/user"
     method: GET
     headers:
       Private-Token: "{{ SOURCE_GITLAB_TOKEN }}"
@@ -26,6 +31,34 @@
 - name: extract username to differ repositories which are from groups
   set_fact:
     username: "{{ (result.content | from_json).username }}"
+
+- name: query gitlab.com user information
+  uri:
+    url: "https://gitlab.com/api/v4/user"
+    method: GET
+    headers:
+      Private-Token: "{{ GITLAB_TOKEN }}"
+    return_content: yes
+    timeout: 120
+  register: result
+
+- name: extract username to differ repositories which are from groups
+  set_fact:
+    gitlabcom_username: "{{ (result.content | from_json).username }}"
+
+- name: query github.com user information
+  uri:
+    url: "https://github.com/api/v4/user"
+    method: GET
+    headers:
+      Private-Token: "{{ GITHUB_TOKEN }}"
+    return_content: yes
+    timeout: 120
+  register: result
+
+- name: extract username to differ repositories which are from groups
+  set_fact:
+    githubcom_username: "{{ (result.content | from_json).username }}"
 
 - name: setup gitlab repository clones
   include_tasks: setup-clone.yml
