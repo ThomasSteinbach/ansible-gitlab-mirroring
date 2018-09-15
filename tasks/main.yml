@@ -43,7 +43,7 @@
 
 - name: query github.com user information
   uri:
-    url: "https://github.com/api/v4/user"
+    url: "https://api.github.com/user"
     method: GET
     headers:
       Private-Token: "{{ GITHUB_TOKEN }}"
@@ -53,7 +53,7 @@
 
 - name: extract username to differ repositories which are from groups
   set_fact:
-    githubcom_username: "{{ (result.content | from_json).username }}"
+    githubcom_username: "{{ (result.content | from_json).login }}"
 
 - name: setup gitlab repository clones
   include_tasks: setup-clone.yml
