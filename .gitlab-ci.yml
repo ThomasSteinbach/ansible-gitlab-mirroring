@@ -9,7 +9,14 @@ test:
     TARGETUSER: uid1000
     TARGETPASSWORD: uid1000
   script:
-    - sleep 90
+    - rounds=10;
+      while [ rounds -gt 0 ]; do
+        set +e;
+        curl -fsSl http://aci-target && break;
+        set -e;
+        sleep 10;
+        rounds=$(($rounds-1));
+      done
     - run-tests
             --extra-vars SOURCE_GITLAB_TOKEN="$(curl -fsSl http://aci-target/root/config/raw/master/access-token)"
             --extra-vars GITLAB_TOKEN="$GITLABCI_SECRET_GITLAB_TOKEN"
