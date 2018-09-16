@@ -57,7 +57,7 @@
 
 - name: execute hook
   become: true
-  become_user: "{{ sourceDir.stat.uid }}"
+  become_user: "#{{ sourceDir.stat.uid }}"
   command: ./custom_hooks/post-receive
   args:
     chdir: "{{ source_repository_path }}/{{ item.path_with_namespace }}.git"
