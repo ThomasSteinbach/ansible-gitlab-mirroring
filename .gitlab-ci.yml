@@ -10,9 +10,9 @@ test:
     TARGETPASSWORD: uid1000
   script:
     - rounds=10;
-      while [ rounds -gt 0 ]; do
+      while [ $rounds -gt 0 ]; do
         set +e;
-        curl -fsSl http://aci-target && break;
+        curl -fsSl http://aci-target:80 && break;
         set -e;
         sleep 10;
         rounds=$(($rounds-1));
