@@ -1,4 +1,7 @@
 ---
+- name: satisfy dependencies
+  include_tasks: dependencies.yml
+
 - name: ensure git user has a private key for executing push hooks got gitlab.com and github.com
   become: yes
   openssl_privatekey:

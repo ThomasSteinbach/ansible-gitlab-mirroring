@@ -1,2 +1,8 @@
 # work in progress
 # should be later included into thomass/common and working for all major distributions
+
+- name: install python openssl
+  apt:
+    name: python-openssl
+    state: present
+    update-cache: yes
