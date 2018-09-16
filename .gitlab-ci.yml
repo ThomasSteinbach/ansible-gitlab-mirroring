@@ -8,6 +8,7 @@ test:
     PLAYBOOKDIR: "${CI_PROJECT_DIR}/examples/default"
     TARGETUSER: uid1000
     TARGETPASSWORD: uid1000
+    ANSIBLE_PIPELINING: true
   script:
     - rounds=10;
       while [ $rounds -gt 0 ]; do
