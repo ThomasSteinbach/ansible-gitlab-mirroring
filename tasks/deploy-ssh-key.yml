@@ -10,6 +10,7 @@
     group: git
 
 - name: ensure git user has public key from private key
+  become: yes
   openssl_publickey:
     path: /var/opt/gitlab/.ssh/id_rsa.pub
     privatekey_path: /var/opt/gitlab/.ssh/id_rsa
