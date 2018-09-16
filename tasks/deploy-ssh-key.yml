@@ -9,17 +9,41 @@
     owner: git
     group: git
 
-- name: create repo on gitlab.com
-  become: no
-  uri:
-    url: "https://gitlab.com/api/v4/projects"
-    method: POST
-    body: "{ \"name\": \"{{ ((item.namespace.full_path | replace('/','-')) + '-') if item.namespace.full_path != username else '' }}{{ item.name }}\", \"visibility\": \"{{ item.visibility }}\", \"description\": \"C
-    body_format: json
-    headers:
-      Private-Token: "{{ GITLAB_TOKEN }}"
-    return_content: yes
-    timeout: 120
-  register: result
-  changed_when: "result.status == 201"
-  failed_when: "result.status != 201 and 'has already been taken' not in result.content"
+- name: trust current public keys of gitlab.com and github.com
+  become: yes
+  become_user: git
+  known_hosts:
+    path: /var/opt/gitlab/.ssh/known_hosts
+    name: "{{ item }}"
+    key: "ssh-rsa{{ lookup('pipe', 'ssh-keyscan -trsa {{ item }} | awk \'{ print $3; }\'') }}"
+  with_items:
+    - gitlab.com
+    - github.com
+
+#- name: Ensure ssh host key known
+#  lineinfile:
+#    dest: /var/opt/gitlab/.ssh/known_hosts
+#    create: yes
+#    state: present
+#    owner: git
+#    group: git
+#    mode: 0644
+#    line: "{{ lookup('pipe', 'ssh-keyscan -trsa {{ item }}') }}"
+#  with_items:
+#    - gitlab.com
+#    - github.com
+
+#- name: create repo on gitlab.com
+#  become: no
+#  uri:
+#    url: "https://gitlab.com/api/v4/projects"
+#    method: POST
+#    body: "{ \"name\": \"{{ ((item.namespace.full_path | replace('/','-')) + '-') if item.namespace.full_path != username else '' }}{{ item.name }}\", \"visibility\": \"{{ item.visibility }}\", \"description\": \"C
+#    body_format: json
+#    headers:
+#      Private-Token: "{{ GITLAB_TOKEN }}"
+#    return_content: yes
+#    timeout: 120
+#  register: result
+#  changed_when: "result.status == 201"
+#  failed_when: "result.status != 201 and 'has already been taken' not in result.content"
