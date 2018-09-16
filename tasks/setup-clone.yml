@@ -6,7 +6,7 @@
   uri:
     url: "https://gitlab.com/api/v4/projects"
     method: POST
-    body: "{ \"name\": \"{{ (item.namespace.full_path + '-') if item.namespace.full_path != username else '' }}{{ item.name }}\", \"visibility\": \"{{ item.visibility }}\", \"description\": \"Clone of {{ item.http_url_to_repo }}\", \"issues_enabled\": false, \"merge_requests_enabled\": false, \"jobs_enabled\": false, \"wiki_enabled\": false, \"snippets_enabled\": false, \"container_registry_enabled\": false, \"shared_runners_enabled\": false }"
+    body: "{ \"name\": \"{{ ((item.namespace.full_path | replace('/','-')) + '-') if item.namespace.full_path != username else '' }}{{ item.name }}\", \"visibility\": \"{{ item.visibility }}\", \"description\": \"Clone of {{ item.http_url_to_repo }}\", \"issues_enabled\": false, \"merge_requests_enabled\": false, \"jobs_enabled\": false, \"wiki_enabled\": false, \"snippets_enabled\": false, \"container_registry_enabled\": false, \"shared_runners_enabled\": false }"
     body_format: json
     headers:
       Private-Token: "{{ GITLAB_TOKEN }}"
@@ -21,7 +21,7 @@
   uri:
     url: "https://api.github.com/user/repos"
     method: POST
-    body: "{ \"name\": \"{{ (item.namespace.full_path + '-') if item.namespace.full_path != username else '' }}{{ item.name }}\", \"description\": \"Clone of {{ item.http_url_to_repo }}\", \"has_issues\": false, \"has_projects\": false, \"has_wiki\": false }"
+    body: "{ \"name\": \"{{ ((item.namespace.full_path | replace('/','-')) + '-') if item.namespace.full_path != username else '' }}{{ item.name }}\", \"description\": \"Clone of {{ item.http_url_to_repo }}\", \"has_issues\": false, \"has_projects\": false, \"has_wiki\": false }"
     body_format: json
     headers:
       Authorization: "token {{ GITHUB_TOKEN }}"
