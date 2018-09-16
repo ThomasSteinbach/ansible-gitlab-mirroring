@@ -12,7 +12,7 @@
 - name: ensure git user has public key from private key
   become: yes
   become_user: git
-  shell: ssh-keygen -y -f /var/opt/gitlab/.ssh/id_rsa > /var/opt/gitlab/.ssh/id_rsa.pub
+  shell: ssh-keygen -y -f /var/opt/gitlab/.ssh/id_rsa > /var/opt/gitlab/.ssh/id_rsa.pub && ls -l /var/opt/gitlab/.ssh
 
 - name: trust current public keys of gitlab.com and github.com
   become: yes
