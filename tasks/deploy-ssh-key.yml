@@ -53,7 +53,6 @@
       Authorization: "token {{ GITHUB_TOKEN }}"
     return_content: yes
     timeout: 120
-  when: item.visibility == 'public'
   register: result
   changed_when: "result.status == 201"
   failed_when: "result.status != 201 and 'key is already in use' not in result.content"
