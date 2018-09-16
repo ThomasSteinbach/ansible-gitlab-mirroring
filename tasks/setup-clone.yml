@@ -24,7 +24,7 @@
     body: "{ \"name\": \"{{ (item.namespace.name + '-') if item.namespace.name != username else '' }}{{ item.path }}\", \"description\": \"Clone of {{ item.http_url_to_repo }}\", \"has_issues\": false, \"has_projects\": false, \"has_wiki\": false }"
     body_format: json
     headers:
-      Authorization: "token GITHUB_TOKEN"
+      Authorization: "token {{ GITHUB_TOKEN }}"
     return_content: yes
     timeout: 120
   when: item.visibility == 'public'
