@@ -21,4 +21,3 @@ test:
             --extra-vars SOURCE_GITLAB_TOKEN="$(curl -fsSl http://aci-target/root/config/raw/master/access-token)"
             --extra-vars GITLAB_TOKEN="$GITLABCI_SECRET_GITLAB_TOKEN"
             --extra-vars GITHUB_TOKEN="$GITLABCI_SECRET_GITHUB_TOKEN"
-            -vvv

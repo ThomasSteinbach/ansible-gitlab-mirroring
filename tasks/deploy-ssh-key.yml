@@ -9,10 +9,12 @@
     owner: git
     group: git
 
-- name: ensure git user has public key from private key
+- name: generate public key from private key
   become: yes
   become_user: git
-  shell: ssh-keygen -y -f /var/opt/gitlab/.ssh/id_rsa > /var/opt/gitlab/.ssh/id_rsa.pub && ls -l /var/opt/gitlab/.ssh
+  command: ssh-keygen -y -f /var/opt/gitlab/.ssh/id_rsa
+  register: publickey
+  changed_when: false
 
 - name: trust current public keys of gitlab.com and github.com
   become: yes
@@ -30,7 +32,7 @@
   uri:
     url: "https://gitlab.com/api/v4/user/keys"
     method: POST
-    body: "{ \"title\": \"{{ ansible_hostname }}-mirror\", \"key\": \"{{ lookup('file', '/var/opt/gitlab/.ssh/id_rsa.pub') }}\" }"
+    body: "{ \"title\": \"{{ ansible_hostname }}-mirror\", \"key\": \"{{ publickey.content }}\" }"
     body_format: json
     headers:
       Private-Token: "{{ GITLAB_TOKEN }}"
@@ -45,7 +47,7 @@
   uri:
     url: "https://api.github.com/user/keys"
     method: POST
-    body: "{ \"title\": \"{{ ansible_hostname }}-mirror\", \"key\": \"{{ lookup('file', '/var/opt/gitlab/.ssh/id_rsa.pub') }}\" }"
+    body: "{ \"title\": \"{{ ansible_hostname }}-mirror\", \"key\": \"{{ publickey.content }}\" }"
     body_format: json
     headers:
       Authorization: "token {{ GITHUB_TOKEN }}"
