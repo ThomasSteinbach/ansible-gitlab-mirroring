@@ -1,5 +1,5 @@
 #!/bin/sh
-/opt/gitlab/embedded/bin/git push --prune git@gitlab.com:{{ gitlabcom_username }}/{{ item.namespace.name }}-{{ item.path }}.git +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
-{% if item.visibility is not defined or item.visibility == 'public' %}
-/opt/gitlab/embedded/bin/git push --prune git@github.com:{{ githubcom_username }}/{{ item.namespace.name }}-{{ item.path }}.git +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
+/opt/gitlab/embedded/bin/git push --prune git@gitlab.com:{{ gitlabcom_username }}/{{ ((item.namespace.full_path | replace('/','-')) + '-') if item.namespace.full_path != username else '' }}{{ item.name }}.git +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
+{% if item.visibility is defined and item.visibility == 'public' %}
+/opt/gitlab/embedded/bin/git push --prune git@github.com:{{ githubcom_username }}/{{ ((item.namespace.full_path | replace('/','-')) + '-') if item.namespace.full_path != username else '' }}{{ item.name }}.git +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
 {% endif %}
