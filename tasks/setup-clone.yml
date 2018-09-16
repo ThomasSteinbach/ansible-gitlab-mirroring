@@ -33,11 +33,13 @@
   failed_when: "result.status != 201 and 'name already exists on this account' not in result.content"
 
 - name: get owner and group of repository dir
+  become: true
   stat:
     path: "{{ source_repository_path }}/{{ item.path_with_namespace }}.git"
   register: sourceDir
 
 - name: create custom_hooks directory
+  become: true
   file:
     path: "{{ source_repository_path }}/{{ item.path_with_namespace }}.git/custom_hooks"
     owner: "{{ sourceDir.stat.uid }}"
@@ -45,6 +47,7 @@
     state: directory
 
 - name: setup post-receive hook to push clone
+  become: true
   template:
     src: post-receive.j2
     dest: "{{ source_repository_path }}/{{ item.path_with_namespace }}.git/custom_hooks/post-receive"
