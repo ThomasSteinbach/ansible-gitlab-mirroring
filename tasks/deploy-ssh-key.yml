@@ -16,10 +16,6 @@
   register: publickey
   changed_when: false
 
-- name: debug contents of publickey
-  debug:
-    var: publickey
-
 - name: trust current public keys of gitlab.com and github.com
   become: yes
   become_user: git
@@ -36,7 +32,7 @@
   uri:
     url: "https://gitlab.com/api/v4/user/keys"
     method: POST
-    body: "{ \"title\": \"{{ ansible_hostname }}-mirror\", \"key\": \"{{ publickey.content }}\" }"
+    body: "{ \"title\": \"{{ ansible_hostname }}-mirror\", \"key\": \"{{ publickey.stdout }}\" }"
     body_format: json
     headers:
       Private-Token: "{{ GITLAB_TOKEN }}"
@@ -51,7 +47,7 @@
   uri:
     url: "https://api.github.com/user/keys"
     method: POST
-    body: "{ \"title\": \"{{ ansible_hostname }}-mirror\", \"key\": \"{{ publickey.content }}\" }"
+    body: "{ \"title\": \"{{ ansible_hostname }}-mirror\", \"key\": \"{{ publickey.stdout }}\" }"
     body_format: json
     headers:
       Authorization: "token {{ GITHUB_TOKEN }}"
