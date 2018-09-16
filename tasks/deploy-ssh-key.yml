@@ -1,0 +1,10 @@
+---
+
+- name: ensure git user has a private key for executing push hooks got gitlab.com and github.com
+  become: yes
+  openssl_privatekey:
+    path: /var/opt/gitlab/.ssh/id_rsa
+    size: 4096
+    type: RSA
+    owner: git
+    group: git

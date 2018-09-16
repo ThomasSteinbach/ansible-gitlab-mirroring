@@ -2,14 +2,8 @@
 - name: satisfy dependencies
   include_tasks: dependencies.yml
 
-- name: ensure git user has a private key for executing push hooks got gitlab.com and github.com
-  become: yes
-  openssl_privatekey:
-    path: /var/opt/gitlab/.ssh/id_rsa
-    size: 4096
-    type: RSA
-    owner: git
-    group: git
+- name: deploy ssh key to gitlab.com and github.com
+  include_tasks: deploy-ssh-key.yml
 
 - name: query users repositories where he is at least developer
   uri:

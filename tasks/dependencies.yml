@@ -2,6 +2,7 @@
 # should be later included into thomass/common and working for all major distributions
 
 - name: install python openssl
+  become: true
   apt:
     name: python-openssl
     state: present
