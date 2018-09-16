@@ -15,7 +15,7 @@
   known_hosts:
     path: /var/opt/gitlab/.ssh/known_hosts
     name: "{{ item }}"
-    key: "ssh-rsa {{ lookup('pipe', \"ssh-keyscan -trsa {{ item }} | awk '{ print $3; }'\") }}"
+    key: "ssh-rsa{{ lookup('pipe', 'ssh-keyscan -trsa {{ item }}') }}"
   with_items:
     - gitlab.com
     - github.com
