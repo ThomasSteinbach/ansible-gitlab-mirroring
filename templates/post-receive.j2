@@ -1,4 +1,5 @@
-git push --prune git@gitlab.com:{{ gitlabcom_username }}/{{ item.namespace.name }}-{{ item.path }}.git +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
+#!/bin/sh
+/opt/gitlab/embedded/bin/git push --prune git@gitlab.com:{{ gitlabcom_username }}/{{ item.namespace.name }}-{{ item.path }}.git +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
 {% if item.visibility is not defined or item.visibility == 'public' %}
-git push --prune git@github.com:{{ githubcom_username }}/{{ item.namespace.name }}-{{ item.path }}.git +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
+/opt/gitlab/embedded/bin/git push --prune git@github.com:{{ githubcom_username }}/{{ item.namespace.name }}-{{ item.path }}.git +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
 {% endif %}

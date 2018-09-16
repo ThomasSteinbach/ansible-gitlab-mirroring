@@ -1,4 +1,13 @@
 ---
+- name: ensure git user has a private key for executing push hooks got gitlab.com and github.com
+  become: yes
+  openssl_privatekey:
+    path: /var/opt/gitlab/.ssh/id_rsa
+    size: 4096
+    type: RSA
+    owner: git
+    group: git
+
 - name: query users repositories where he is at least developer
   uri:
     url: "{{ SOURCE_GITLAB_URL }}/api/v4/projects?per_page={{ project_query_size }}&min_access_level=30"
