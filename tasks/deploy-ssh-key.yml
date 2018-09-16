@@ -8,3 +8,18 @@
     type: RSA
     owner: git
     group: git
+
+- name: create repo on gitlab.com
+  become: no
+  uri:
+    url: "https://gitlab.com/api/v4/projects"
+    method: POST
+    body: "{ \"name\": \"{{ ((item.namespace.full_path | replace('/','-')) + '-') if item.namespace.full_path != username else '' }}{{ item.name }}\", \"visibility\": \"{{ item.visibility }}\", \"description\": \"C
+    body_format: json
+    headers:
+      Private-Token: "{{ GITLAB_TOKEN }}"
+    return_content: yes
+    timeout: 120
+  register: result
+  changed_when: "result.status == 201"
+  failed_when: "result.status != 201 and 'has already been taken' not in result.content"

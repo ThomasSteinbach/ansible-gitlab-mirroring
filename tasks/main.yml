@@ -2,8 +2,8 @@
 - name: satisfy dependencies
   include_tasks: dependencies.yml
 
-- name: deploy ssh key to gitlab.com and github.com
-  include_tasks: deploy-ssh-key.yml
+  #- name: deploy ssh key to gitlab.com and github.com
+  #  include_tasks: deploy-ssh-key.yml
 
 - name: query users repositories where he is at least developer
   uri:
