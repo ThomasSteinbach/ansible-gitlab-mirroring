@@ -20,30 +20,33 @@
     - gitlab.com
     - github.com
 
-#- name: Ensure ssh host key known
-#  lineinfile:
-#    dest: /var/opt/gitlab/.ssh/known_hosts
-#    create: yes
-#    state: present
-#    owner: git
-#    group: git
-#    mode: 0644
-#    line: "{{ lookup('pipe', 'ssh-keyscan -trsa {{ item }}') }}"
-#  with_items:
-#    - gitlab.com
-#    - github.com
+- name: create ssh key on gitlab.com
+  become: yes
+  uri:
+    url: "https://gitlab.com/api/v4/user/keys"
+    method: POST
+    body: "{ \"title\": \"{{ ansible_hostname }}-mirror\", \"key\": \"{{ lookup('file', '/var/opt/gitlab/.ssh/id_rsa.pub') }}\" }"
+    body_format: json
+    headers:
+      Private-Token: "{{ GITLAB_TOKEN }}"
+    return_content: yes
+    timeout: 120
+  register: result
+  changed_when: "result.status == 201"
+  failed_when: "result.status != 201 and 'has already been taken' not in result.content"
 
-#- name: create repo on gitlab.com
-#  become: no
-#  uri:
-#    url: "https://gitlab.com/api/v4/projects"
-#    method: POST
-#    body: "{ \"name\": \"{{ ((item.namespace.full_path | replace('/','-')) + '-') if item.namespace.full_path != username else '' }}{{ item.name }}\", \"visibility\": \"{{ item.visibility }}\", \"description\": \"C
-#    body_format: json
-#    headers:
-#      Private-Token: "{{ GITLAB_TOKEN }}"
-#    return_content: yes
-#    timeout: 120
-#  register: result
-#  changed_when: "result.status == 201"
-#  failed_when: "result.status != 201 and 'has already been taken' not in result.content"
+- name: create ssh key on github.com
+  become: yes
+  uri:
+    url: "https://api.github.com/user/keys"
+    method: POST
+    body: "{ \"title\": \"{{ ansible_hostname }}-mirror\", \"key\": \"{{ lookup('file', '/var/opt/gitlab/.ssh/id_rsa.pub') }}\" }"
+    body_format: json
+    headers:
+      Authorization: "token {{ GITHUB_TOKEN }}"
+    return_content: yes
+    timeout: 120
+  when: item.visibility == 'public'
+  register: result
+  changed_when: "result.status == 201"
+  failed_when: "result.status != 201 and 'key is already in use' not in result.content"
