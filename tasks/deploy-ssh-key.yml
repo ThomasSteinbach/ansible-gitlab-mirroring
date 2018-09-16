@@ -9,6 +9,11 @@
     owner: git
     group: git
 
+- name: ensure git user has public key from private key
+  openssl_publickey:
+    path: /var/opt/gitlab/.ssh/id_rsa.pub
+    privatekey_path: /var/opt/gitlab/.ssh/id_rsa
+
 - name: trust current public keys of gitlab.com and github.com
   become: yes
   become_user: git
