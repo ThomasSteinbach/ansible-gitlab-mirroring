@@ -18,6 +18,7 @@ test:
         rounds=$(($rounds-1));
       done
     - run-tests
-            --extra-vars SOURCE_GITLAB_TOKEN="$(curl -fsSl http://aci-target/root/config/raw/master/access-token)"
-            --extra-vars GITLAB_TOKEN="$GITLABCI_SECRET_GITLAB_TOKEN"
-            --extra-vars GITHUB_TOKEN="$GITLABCI_SECRET_GITHUB_TOKEN"
+        SOURCE_GITLAB_TOKEN="$(curl -fsSl http://aci-target/root/config/raw/master/access-token)"
+        GITHUB_TOKEN="$GITLABCI_SECRET_GITHUB_TOKEN"
+        GITLAB_TOKEN="$GITLABCI_SECRET_GITLAB_TOKEN"
+        GITLAB_TOKEN_2="$GITLABCI_SECRET_GITLAB_TOKEN_2"

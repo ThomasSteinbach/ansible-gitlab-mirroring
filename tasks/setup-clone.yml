@@ -55,4 +55,4 @@
   command: ./custom_hooks/post-receive
   args:
     chdir: "{{ source_repository_path }}/{{ item.path_with_namespace }}.git"
-  changes_when: false
+  changed_when: false
