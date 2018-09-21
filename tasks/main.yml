@@ -7,7 +7,7 @@
 
 - name: query users repositories where he is at least developer
   uri:
-    url: "{{ SOURCE_GITLAB_URL }}/api/v4/projects?per_page={{ project_query_size }}&min_access_level=30"
+    url: "http://localhost:80/api/v4/projects?per_page={{ project_query_size }}&min_access_level=30"
     method: GET                
     headers:
       Private-Token: "{{ SOURCE_GITLAB_TOKEN }}"
@@ -21,7 +21,7 @@
 
 - name: query user information
   uri:
-    url: "{{ SOURCE_GITLAB_URL }}/api/v4/user"
+    url: "http://localhost:80/api/v4/user"
     method: GET
     headers:
       Private-Token: "{{ SOURCE_GITLAB_TOKEN }}"

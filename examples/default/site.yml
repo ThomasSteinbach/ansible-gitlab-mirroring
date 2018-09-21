@@ -3,4 +3,5 @@
   roles:
     - role: gitlab-mirroring
       source_repository_path: /var/opt/gitlab/git-data/repositories
-      SOURCE_GITLAB_URL: http://localhost
+      ignored_repositories:
+        - root/config
