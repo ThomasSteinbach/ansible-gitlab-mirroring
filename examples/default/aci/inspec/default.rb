@@ -101,7 +101,7 @@ control 'non-public-repos-for-gitlab-internals' do
   '
   describe http('https://gitlab.com/ansibleci-test/internalrepo',
                headers: {'Private-Token' => ENV['GITLAB_TOKEN_2']}) do
-    its('status') { should cmp 403 }
+    its('status') { should cmp 404 }
   end
   describe http('https://gitlab.com/ansibleci-test/privaterepo',
                headers: {'Private-Token' => ENV['GITLAB_TOKEN_2']}) do
@@ -116,7 +116,7 @@ control 'excluded-repos-on-gitlab' do
     not be accessible for logged in users, owners and others.
   '
   describe http('https://gitlab.com/ansibleci-test/config') do
-    its('status') { should cmp 404 }
+    its('status') { should cmp 302 }
   end
   describe http('https://gitlab.com/ansibleci-test/config',
                headers: {'Private-Token' => ENV['GITLAB_TOKEN']}) do
