@@ -105,7 +105,7 @@ control 'non-public-repos-for-gitlab-internals' do
   end
   describe http('https://gitlab.com/ansibleci-test/privaterepo',
                headers: {'Private-Token' => ENV['GITLAB_TOKEN_2']}) do
-    its('status') { should cmp 403 }
+    its('status') { should cmp 404 }
   end
 end
 
