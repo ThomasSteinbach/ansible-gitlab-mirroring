@@ -2,7 +2,7 @@ echo "REPO CLEANUP"
 echo "------------"
 
 echo "Delete all Gitlab repos"
-repos_ids=$(curl -fsSL -H "Private-Token: $GITLAB_TOKEN" 'https://gitlab.com/api/v4/projects?min_access_level=30'|jq '.[].id')
+repo_ids=$(curl -fsSL -H "Private-Token: $GITLAB_TOKEN" 'https://gitlab.com/api/v4/projects?min_access_level=30'|jq '.[].id')
 for id in $repo_ids; do
   curl -fsSL -H "Private-Token: $GITLAB_TOKEN" -X DELETE "https://gitlab.com/api/v4/projects/$id"
 done
